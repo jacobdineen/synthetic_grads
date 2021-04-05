@@ -1,5 +1,6 @@
 from tensorflow import keras
 from tensorflow.keras import layers
+from keras.models import Sequential
 
 
 def get_4_layer(input_shape=(28, 28, 1), num_classes=10):
@@ -41,11 +42,14 @@ def get_8_layer(input_shape=(28, 28, 1), num_classes=10):
 def get_VGG16(input_shape=(48, 48, 3), num_classes=10):
     from tensorflow.keras.applications import VGG16
 
-    model = VGG16(include_top=False, input_shape=input_shape)
+    model_base = VGG16(include_top=False, input_shape=input_shape)
 
-    model.add(Dense(64, activation="relu"))
-    model.add(Dense(128, activation="relu"))
-    model.add(Dense(num_classes, activation="softmax"))
+    model = Sequential()
+    model.add(model_base)
+    model.add(layers.Flatten())
+    model.add(layers.Dense(64, activation="relu"))
+    model.add(layers.Dense(128, activation="relu"))
+    model.add(layers.Dense(num_classes, activation="softmax"))
 
     return model
 
