@@ -8,14 +8,14 @@ from keras.layers import Dense, BatchNormalization, Activation
 
 
 class Layer(object):
-    """ Layer class for creating dense layers.
+    """Layer class for creating dense layers.
     This class Keras layers as its backbone to create
     dense layers with BatchNorm and relu activation.
     Attributes:
         units: An integer number of nodes of a layer.
         inputs: A tensor that will be input to the layer.
         name: A string for defintion and tf.scope.
-        out: A boolean indicating whether to add BatchNorm 
+        out: A boolean indicating whether to add BatchNorm
             and relu activation.
         sg: A boolean indicating whether the layer is for
             synthetic gradients.
@@ -40,8 +40,8 @@ class Layer(object):
 
 class ModelSG(object):
     """Model for demonstraing synthetic gradients.
-    A model that uses Keras and Tensorflow to 
-    demonstrate decoupled training through synthetic 
+    A model that uses Keras and Tensorflow to
+    demonstrate decoupled training through synthetic
     gradients on MNIST dataset.
     Attributes:
         sess: A tf.sess() that will be used by the model.
@@ -59,8 +59,7 @@ class ModelSG(object):
         self.create_layers()
 
     def create_layers(self):
-        """Creates normal and synthetic layers for the graph
-        """
+        """Creates normal and synthetic layers for the graph"""
         # Inputs
         X = tf.placeholder(tf.float32, shape=(None, 784), name="data")
         Y = tf.placeholder(tf.float32, shape=(None, 10), name="labels")
@@ -80,17 +79,17 @@ class ModelSG(object):
         self.synth_layers = [synth_layer1, synth_layer2, synth_layer3]
 
     def train_layer_n(self, h_m, h_n, d_hat_m, class_loss, next_l, d_n=None, p=True):
-        """Creates computation graphs for decoupled training through 
-            applying synthetic gradients on gradients of the layers.
-        
-            Args:
-                h_m: An integer index of a layer that will be updated.
-                h_n: An integer index of a layer from which grads of `h_m` will be calculated.
-                d_hat_m: An integer index of a synthetic layer that accompanies `h_m`.
-                class_loss: A tensor that contains the prediction loss.
-                next_l: An integer index of a following layer of `h_m`.
-                d_n: An integer index of a synthetic layer whose grads will be applied to grads of `h_m`.
-                p: A boolean indicating whether 
+        """Creates computation graphs for decoupled training through
+        applying synthetic gradients on gradients of the layers.
+
+        Args:
+            h_m: An integer index of a layer that will be updated.
+            h_n: An integer index of a layer from which grads of `h_m` will be calculated.
+            d_hat_m: An integer index of a synthetic layer that accompanies `h_m`.
+            class_loss: A tensor that contains the prediction loss.
+            next_l: An integer index of a following layer of `h_m`.
+            d_n: An integer index of a synthetic layer whose grads will be applied to grads of `h_m`.
+            p: A boolean indicating whether
         """
         if d_n is not None:
             d_n = self.synth_layers[d_n].output
@@ -152,7 +151,7 @@ class ModelSG(object):
 
     def train(self, iterations, batch_size, update_prob, learning_rate):
         """Trains the model in a decoupled way on a MNIST dataset.
-        
+
         Args:
             iterations: An integer for how many iterations the model will train.
             batch_size: An integer for the size of the batches.
@@ -208,4 +207,3 @@ class ModelSG(object):
                 test_accuracy += batch_accuracy
             print("Test Loss:", test_loss / n_batches)
             print("Test Accuracy:", test_accuracy / n_batches)
-
