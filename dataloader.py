@@ -1,44 +1,51 @@
-import numpy as np
-from tensorflow import keras
-from tensorflow.keras.preprocessing.image import img_to_array, array_to_img
+import torchvision
+import torch.utils.data as data_utils
+import torch
 
 
-def get_MNIST(num_classes=10, vgg_preprocess=False):
-    """
-    VGG16 requires special preprocessing. We need images to be size > 32
-    and also need the channel dim to equal 3.
-
-    No specification is made on whether or not the other two models follow this cleaning paradigm.
-    """
-    # the data, split between train and test sets
-    (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
-    # convert class vectors to binary class matrices
-    y_train = keras.utils.to_categorical(y_train, num_classes)
-    y_test = keras.utils.to_categorical(y_test, num_classes)
-
-    if vgg_preprocess:
-        x_train = np.dstack([x_train] * 3)
-        x_test = np.dstack([x_test] * 3)
-        x_train = x_train.reshape(-1, 28, 28, 3)
-        x_test = x_test.reshape(-1, 28, 28, 3)
-        x_train = np.asarray(
+def get_dataloaders(
+    train_size: int = 5000,
+    test_size: int = 1000,
+    batch_size_train: int = 128,
+    batch_size_test: int = 1000,
+):
+    indices = torch.arange(train_size)
+    train = torchvision.datasets.MNIST(
+        "./data",
+        train=True,
+        download=True,
+        transform=torchvision.transforms.Compose(
             [
-                img_to_array(array_to_img(im, scale=False).resize((48, 48)))
-                for im in x_train
+                torchvision.transforms.Resize(48),
+                torchvision.transforms.ToTensor(),
+                torchvision.transforms.Normalize((0.1307,), (0.3081,)),
             ]
-        )
-        x_test = np.asarray(
+        ),
+    )
+
+    train_slice = data_utils.Subset(train, indices)
+
+    train_loader = torch.utils.data.DataLoader(
+        train_slice, batch_size=batch_size_train, shuffle=True
+    )
+
+    indices = torch.arange(test_size)
+    test = torchvision.datasets.MNIST(
+        "./data",
+        train=False,
+        download=True,
+        transform=torchvision.transforms.Compose(
             [
-                img_to_array(array_to_img(im, scale=False).resize((48, 48)))
-                for im in x_test
+                torchvision.transforms.Resize(48),
+                torchvision.transforms.ToTensor(),
+                torchvision.transforms.Normalize((0.1307,), (0.3081,)),
             ]
-        )
+        ),
+    )
 
-    else:
-        # Make sure images have shape (28, 28, 1)
-        x_train = np.expand_dims(x_train, -1)
-        x_test = np.expand_dims(x_test, -1)
-    x_train = x_train.astype("float32") / 255
-    x_test = x_test.astype("float32") / 255
+    test_slice = data_utils.Subset(test, indices)
 
-    return (x_train, y_train, x_test, y_test)
+    test_loader = torch.utils.data.DataLoader(
+        test_slice, batch_size=batch_size_test, shuffle=True
+    )
+    return train_loader, test_loader
