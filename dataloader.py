@@ -4,10 +4,7 @@ import torch
 
 
 def get_dataloaders(
-    train_size: int = 5000,
-    test_size: int = 1000,
-    batch_size_train: int = 128,
-    batch_size_test: int = 1000,
+    train_size: int = 5000, test_size: int = 1000, batch_size_train: int = 256,
 ):
     indices = torch.arange(train_size)
     train = torchvision.datasets.MNIST(
@@ -15,11 +12,7 @@ def get_dataloaders(
         train=True,
         download=True,
         transform=torchvision.transforms.Compose(
-            [
-                torchvision.transforms.Resize(48),
-                torchvision.transforms.ToTensor(),
-                torchvision.transforms.Normalize((0.1307,), (0.3081,)),
-            ]
+            [torchvision.transforms.Resize(48), torchvision.transforms.ToTensor(),]
         ),
     )
 
@@ -46,6 +39,6 @@ def get_dataloaders(
     test_slice = data_utils.Subset(test, indices)
 
     test_loader = torch.utils.data.DataLoader(
-        test_slice, batch_size=batch_size_test, shuffle=True
+        test_slice, batch_size=test_size, shuffle=True
     )
     return train_loader, test_loader

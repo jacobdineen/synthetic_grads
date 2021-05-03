@@ -11,31 +11,28 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 
-def train(model, epoch, train_loader, log_interval):
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+def train(model, epoch, train_loader, log_interval, verbose=False):
     model.train()
     model.cuda()
+    optimizer = optim.Adam(model.parameters(), lr=3e-5)
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.cuda(), target.cuda()
         optimizer.zero_grad()
         output = model(data)
-        loss = F.nll_loss(output, target)
+        loss = F.nll_loss(output, target, size_average=False).item()
         loss.backward()
         optimizer.step()
-        if batch_idx % log_interval == 0:
-            print(
-                "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                    epoch,
-                    batch_idx * len(data),
-                    len(train_loader.dataset),
-                    100.0 * batch_idx / len(data),
-                    loss.item(),
+        if verbose:
+            if batch_idx % log_interval == 0:
+                print(
+                    "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                        epoch,
+                        batch_idx * len(data),
+                        len(train_loader.dataset),
+                        100.0 * batch_idx / len(data),
+                        loss.item(),
+                    )
                 )
-            )
-
-
-#             train_counter.append((batch_idx * 64) +
-#                                  ((epoch - 1) * len(train_loader.dataset)))
 
 
 def test(model, test_loader):
@@ -45,18 +42,23 @@ def test(model, test_loader):
     model.cuda()
     test_loss = 0
     correct = 0
+    total = 0
     with torch.no_grad():
         for data, target in test_loader:
             data, target = data.cuda(), target.cuda()
+            data, target = Variable(data, volatile=True), Variable(target)
             output = model(data)
-            test_loss += F.nll_loss(
-                output.cpu(), target.cpu(), size_average=False
-            ).item()
-            pred = output.cpu().data.max(1, keepdim=True)[1]
-            correct += pred.cpu().eq(target.cpu().data.view_as(pred)).sum()
-    test_loss /= len(test_loader.dataset)
+            test_loss += F.nll_loss(output, target, size_average=False).item()
 
-    test_accuracy = 100.0 * correct / len(test_loader.dataset)
+            pred = output.data.max(1, keepdim=True)[
+                1
+            ]  # get the index of the max log-probability
+            correct += pred.eq(target.data.view_as(pred)).cpu().sum()
+            total += target.size(0)
+
+    test_loss /= len(test_loader.dataset)
+    test_accuracy = 100 * correct / total
+
     prec, recall, f1, support = precision_recall_fscore_support(
         target.cpu(), pred.cpu(), average="weighted"
     )
@@ -71,10 +73,10 @@ def test(model, test_loader):
     return test_metrics
 
 
-def train_sg(model, epoch, train_loader, log_interval):
+def train_sg(model, epoch, train_loader, log_interval, verbose=False):
     model.train()
     model.cuda()
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    optimizer = optim.Adam(model.parameters(), lr=3e-5)
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.cuda(), target.cuda()
         data, target = Variable(data), Variable(target)
@@ -83,14 +85,15 @@ def train_sg(model, epoch, train_loader, log_interval):
         loss = F.nll_loss(output, target)
         loss.backward()
         optimizer.step()
-        if batch_idx % log_interval == 0:
-            print(
-                "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
-                    epoch,
-                    batch_idx * len(data),
-                    len(train_loader.dataset),
-                    100.0 * batch_idx / len(data),
-                    loss.data.item(),
+        if verbose:
+            if batch_idx % log_interval == 0:
+                print(
+                    "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
+                        epoch,
+                        batch_idx * len(data),
+                        len(train_loader.dataset),
+                        100.0 * batch_idx / len(data),
+                        loss.data.item(),
+                    )
                 )
-            )
 
