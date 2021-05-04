@@ -1,0 +1,14 @@
+FROM pytorch/pytorch
+
+WORKDIR /mydata
+
+RUN pip install torchvision
+
+COPY data ./data
+COPY dataloader.py ./dataloader.py
+COPY train1.py ./train2.py
+COPY main.py ./main.py
+COPY models.py ./models.py
+COPY dni.py ./dni.py
+
+CMD ["python3","./train2.py"]

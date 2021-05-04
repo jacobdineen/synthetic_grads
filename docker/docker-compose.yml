@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+    block1:
+        image: b1
+        build:
+            context: ./
+            dockerfile: block1_Dockerfile
+        environment:
+            - PYTHONUNBUFFERED=0
+
+    block2:
+        image: b2
+        build:
+            context: ./
+            dockerfile: block2_Dockerfile
+        environment:
+            - PYTHONUNBUFFERED=0
+
+
