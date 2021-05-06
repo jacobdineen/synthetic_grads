@@ -3,6 +3,7 @@
 /models/__pycache__
 /.vscode
 /logging
+/logging1
 /docker/data
 ./data
 data/MNIST/raw/t10k-images-idx3-ubyte

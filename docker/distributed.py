@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
+# https://databricks.com/tensorflow/distributed-computing-with-tensorflow
 tf.compat.v1.disable_eager_execution()
 cluster = tf.train.ClusterSpec({"local": ["localhost:2222", "localhost:2223"]})
 
