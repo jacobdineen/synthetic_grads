@@ -1,19 +1,34 @@
-version: "3.7"
+version: "3.8"
 services:
     block1:
         image: b1
+
         build:
             context: ./
-            dockerfile: block1_Dockerfile
+            dockerfile: tensorflow_Dockerfile
         environment:
             - PYTHONUNBUFFERED=0
 
-    block2:
-        image: b2
-        build:
-            context: ./
-            dockerfile: block2_Dockerfile
-        environment:
-            - PYTHONUNBUFFERED=0
+    # block2:
+    #     image: b2
+
+    #     build:
+    #         context: ./
+    #         dockerfile: block2_Dockerfile
+    #     environment:
+    #         - PYTHONUNBUFFERED=0
+
+    #         docker run -it --rm --volume logs:/logs alpine ls -AlF /logs/
 
 
+# purge: docker purge -a
+# clear vmm: wsl --shutdown
+
+# docker build -t docker-ml-model -f tensorflow.Dockerfile .
+# docker-ml-model is the image and test is the container name. -t -d makes sure the container doesn't exit
+# docker run -t -d --name test -p :2222  docker-ml-model
+# docker run -t -d --name test1 -p :2223  docker-ml-model
+# launch servers via python python_server 0/1
+# run code
+#get ip address
+#docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name

@@ -2,6 +2,8 @@
 /__pycache__
 /models/__pycache__
 /.vscode
+/logging
+/docker/data
 ./data
 data/MNIST/raw/t10k-images-idx3-ubyte
 data/MNIST/processed/test.pt
