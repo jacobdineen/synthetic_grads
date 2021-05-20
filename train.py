@@ -19,7 +19,7 @@ def train(model, epoch, train_loader, log_interval, verbose=False):
         data, target = data.cuda(), target.cuda()
         optimizer.zero_grad()
         output = model(data)
-        loss = F.nll_loss(output, target, size_average=False).item()
+        loss = F.nll_loss(output, target, size_average=False)
         loss.backward()
         optimizer.step()
         if verbose:
@@ -96,4 +96,3 @@ def train_sg(model, epoch, train_loader, log_interval, verbose=False):
                         loss.data.item(),
                     )
                 )
-

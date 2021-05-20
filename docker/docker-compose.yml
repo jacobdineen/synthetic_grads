@@ -9,16 +9,6 @@ services:
         environment:
             - PYTHONUNBUFFERED=0
 
-    # block2:
-    #     image: b2
-
-    #     build:
-    #         context: ./
-    #         dockerfile: block2_Dockerfile
-    #     environment:
-    #         - PYTHONUNBUFFERED=0
-
-    #         docker run -it --rm --volume logs:/logs alpine ls -AlF /logs/
 
 
 # purge: docker purge -a

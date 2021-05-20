@@ -5,6 +5,7 @@ import torchvision.models as models
 import dni
 from torch.autograd import Variable
 import torch
+import tensorflow as tf
 
 
 class Four_Layer(nn.Module):
@@ -255,4 +256,3 @@ class VGG16_SG2(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return F.log_softmax(x, dim=1)
-
